@@ -486,8 +486,13 @@ def main(_):
   tf.gfile.MakeDirs(FLAGS.output_dir)
 
   input_files = []
-  for input_pattern in FLAGS.input_file.split(","):
-    input_files.extend(tf.gfile.Glob(input_pattern))
+  import os
+  if os.path.isdir(FLAGS.input_file):
+    from gcloud.gcs import fhfile
+    input_files = list(fhfile.walk_path(FLAGS.input_file))
+  else:
+    for input_pattern in FLAGS.input_file.split(","):
+      input_files.extend(tf.gfile.Glob(input_pattern))
 
   tf.logging.info("*** Input Files ***")
   for input_file in input_files:
